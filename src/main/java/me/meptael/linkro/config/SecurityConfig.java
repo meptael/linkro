@@ -19,11 +19,18 @@ public class SecurityConfig {
                 .mvcMatchers("/", "/login", "/sign-up", "/login-form").permitAll()
                 .mvcMatchers("/resources/**").permitAll()
                 .mvcMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .anyRequest().authenticated()
-                .and().formLogin().loginPage("/");
+                .antMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated();
+        
+        http.sessionManagement()
+        	.maximumSessions(1)
+        	.maxSessionsPreventsLogin(false);
+        
+        http.csrf().ignoringAntMatchers("/h2-console/**").disable();
+        http.headers().frameOptions().sameOrigin();
 
         http.logout()
-                .logoutUrl("/logout");
+        		.logoutSuccessUrl("/");
 
         return http.build();
     }
